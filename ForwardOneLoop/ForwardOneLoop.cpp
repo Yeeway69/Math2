@@ -3,15 +3,31 @@
 #include <vector>
 #include <windows.h>  // For GetAsyncKeyState
 #include <chrono>  // For measuring time
+#include <tuple>
+
+
 
 // Function to implement the ForwardOneLoop operation
 void ForwardOneLoop(std::vector<std::vector<double>>& matrix, int n) {
+    std::vector<std::tuple<int, int, double>> operations;
+
+    // Precompute the operations needed for each row operation
     for (int i = 0; i < n; ++i) {
+        double pivot = matrix[i][i];
         for (int j = i + 1; j < n; ++j) {
-            double factor = matrix[j][i] / matrix[i][i];
-            for (int k = i; k < n + 1; ++k) {
-                matrix[j][k] -= factor * matrix[i][k];
-            }
+            double factor = matrix[j][i] / pivot;
+            operations.emplace_back(i, j, factor);
+        }
+    }
+
+    // Use a single loop to apply the precomputed operations
+    for (size_t idx = 0; idx < operations.size(); ++idx) {
+        int pivotRow = std::get<0>(operations[idx]);
+        int targetRow = std::get<1>(operations[idx]);
+        double factor = std::get<2>(operations[idx]);
+
+        for (int k = pivotRow; k < n + 1; ++k) {
+            matrix[targetRow][k] -= factor * matrix[pivotRow][k];
         }
     }
 }

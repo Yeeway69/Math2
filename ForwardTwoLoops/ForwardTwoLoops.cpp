@@ -7,15 +7,24 @@
 // Function to implement the ForwardTwoLoops operation
 void ForwardTwoLoops(std::vector<std::vector<double>>& matrix, int n) {
     for (int i = 0; i < n; ++i) {
-        std::vector<double> pivotRow = matrix[i];
+        double pivot = matrix[i][i];
+
+        // Precompute a vector that holds the elements of the pivot row divided by the pivot element
+        std::vector<double> precomputedRow;
+        for (int k = i; k < n + 1; ++k) {
+            precomputedRow.push_back(matrix[i][k] / pivot);
+        }
+
+        // Use a single loop to update all rows below the pivot
         for (int j = i + 1; j < n; ++j) {
-            double factor = matrix[j][i] / pivotRow[i];
-            for (int k = i; k < n + 1; ++k) {
-                matrix[j][k] -= factor * pivotRow[k];
+            double factor = matrix[j][i];
+            for (int k = i, l = 0; k < n + 1; ++k, ++l) {
+                matrix[j][k] -= factor * precomputedRow[l];
             }
         }
     }
 }
+
 
 // Function to print a matrix
 void printMatrix(const std::vector<std::vector<double>>& matrix) {
