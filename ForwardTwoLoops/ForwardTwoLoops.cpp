@@ -15,7 +15,7 @@ void ForwardTwoLoops(std::vector<std::vector<double>>& matrix, int n) {
             precomputedRow.push_back(matrix[i][k] / pivot);
         }
 
-        // Use a single loop to update all rows below the pivot
+        // Use a two loops to update all rows below the pivot
         for (int j = i + 1; j < n; ++j) {
             double factor = matrix[j][i];
             for (int k = i, l = 0; k < n + 1; ++k, ++l) {
