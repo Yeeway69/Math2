@@ -29,7 +29,7 @@ while running:
     handle_keyboard_events(event, cube)
 
     # Update cube and UI
-    cube.update()
+    
     update_ui(screen, cube)
 
     # Update the display
