@@ -1,0 +1,1 @@
+# Handles the overall layout and integration of UI components
