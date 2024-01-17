@@ -7,14 +7,14 @@ class Cube:
         self.size = 50
         # Vertices of a cube
         self.vertices = [
-            [-1, -1, -1],
             [1, -1, -1],
             [1, 1, -1],
             [-1, 1, -1],
-            [-1, -1, 1],
+            [-1, -1, -1],
             [1, -1, 1],
             [1, 1, 1],
-            [-1, 1, 1]
+            [-1, 1, 1],
+            [-1, -1, 1]
         ]
         # Scale the cube size
         self.vertices = [[self.size * x, self.size * y, self.size * z] for x, y, z in self.vertices]
@@ -43,8 +43,8 @@ class Cube:
         # Draw the cube on the screen
         width, height = screen.get_size()
         center_x, center_y = width // 4, height // 2
-        scale = 20  # Adjust if the cube is too large or too small
-        fov = 300  # Field of View
+        scale = 2  # Adjust if the cube is too large or too small
+        fov = 100  # Field of View
         viewer_distance = 5
 
         # Sort the edges by the furthest away z value
@@ -54,10 +54,14 @@ class Cube:
             points = []
             for vertex in edge:
                 x, y, z = self.vertices[vertex]
-                # Perspective projection
-                if z > -viewer_distance:
-                    factor = fov / (viewer_distance + z)
-                    x, y = x * factor + center_x, -y * factor + center_y
-                    points.append((x, y))
-            if len(points) == 2:
-                pygame.draw.line(screen, (255, 255, 255), points[0], points[1], 2)
+                # Applying perspective projection to map 3D coordinates to 2D
+                if z > 0:  # This ensures we're not trying to project points that are 'behind' the viewer
+                    factor = fov / (fov + z)
+                    x, y = x * factor, y * factor
+                    # Convert the projected points to screen space (2D)
+                    screen_x, screen_y = (center_x + int(x * scale), center_y - int(y * scale))
+                    points.append((screen_x, screen_y))
+                else:
+                    break  # Skip the edge if one of its vertices is behind the viewer
+            if len(points) == 2:  # If both points are in front of the viewer, draw the edge
+                pygame.draw.line(screen, (255, 255, 255), points[0], points[1], 1)
