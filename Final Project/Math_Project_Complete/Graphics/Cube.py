@@ -3,10 +3,10 @@ import math
 
 class Cube:
     def __init__(self):
-        # Define the size of the cube (scale it up)
+        # Size of the cube (scale it up)
         self.size = 100
-        
-        # Vertices of a cube
+
+        # Vertices of a cube (scaled)
         self.vertices = [
             [self.size, -self.size, -self.size],
             [self.size, self.size, -self.size],
@@ -26,14 +26,12 @@ class Cube:
         ]
 
     def rotate_x(self, angle):
-        # Rotate the cube around the X axis by the given angle
         cos_theta, sin_theta = math.cos(angle), math.sin(angle)
         for i, vertex in enumerate(self.vertices):
             x, y, z = vertex
             self.vertices[i] = [x, y * cos_theta - z * sin_theta, y * sin_theta + z * cos_theta]
 
     def rotate_y(self, angle):
-        # Rotate the cube around the Y axis by the given angle
         cos_theta, sin_theta = math.cos(angle), math.sin(angle)
         for i, vertex in enumerate(self.vertices):
             x, y, z = vertex
@@ -43,8 +41,6 @@ class Cube:
         width, height = screen.get_size()
         center_x, center_y = width // 4, height // 2
         scale = 100
-
-        # Adjust these parameters for better visibility and perspective
         fov = 200
         viewer_distance = 5
 
@@ -52,13 +48,11 @@ class Cube:
             points = []
             for vertex in edge:
                 x, y, z = [v * scale for v in self.vertices[vertex]]
-                # Perspective projection
                 if z > -viewer_distance:
                     factor = fov / (viewer_distance + z)
                     x, y = x * factor + center_x, -y * factor + center_y
                     points.append((x, y))
                 else:
-                    break  # Skip drawing this edge if part of it is behind the viewer
-
+                    break
             if len(points) == 2:
                 pygame.draw.line(screen, (255, 255, 255), points[0], points[1], 2)
