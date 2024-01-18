@@ -1,5 +1,6 @@
 import pygame
 import math
+import numpy as np
 
 class Cube:
     def __init__(self):
@@ -24,6 +25,10 @@ class Cube:
             (4, 5), (5, 6), (6, 7), (7, 4), # Top vertices
             (0, 4), (1, 5), (2, 6), (3, 7)  # Side edges connecting top and bottom vertices
         ]
+        # Initialize Euler angles (roll, pitch, yaw) in radians
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
 
     def rotate_x(self, angle):
         # Rotate the cube around the X axis by the given angle
@@ -31,6 +36,9 @@ class Cube:
         for i, vertex in enumerate(self.vertices):
             x, y, z = vertex
             self.vertices[i] = [x, y * cos_theta - z * sin_theta, y * sin_theta + z * cos_theta]
+        
+        # Update the roll angle    
+        self.roll += angle  
 
     def rotate_y(self, angle):
         # Rotate the cube around the Y axis by the given angle
@@ -39,6 +47,8 @@ class Cube:
             x, y, z = vertex
             self.vertices[i] = [x * cos_theta + z * sin_theta, y, -x * sin_theta + z * cos_theta]
 
+        # Update the pitch angle
+        self.pitch += angle
     def draw(self, screen):
         # Draw the cube on the screen
         width, height = screen.get_size()
@@ -65,3 +75,15 @@ class Cube:
                     break  # Skip the edge if one of its vertices is behind the viewer
             if len(points) == 2:  # If both points are in front of the viewer, draw the edge
                 pygame.draw.line(screen, (255, 255, 255), points[0], points[1], 1)
+                
+    def apply_rotation(self, rotation_matrix):
+        # Apply the rotation matrix to each vertex
+        for i, vertex in enumerate(self.vertices):
+            # Convert the vertex list to a NumPy array for matrix multiplication
+            rotated_vertex = np.dot(rotation_matrix, np.array(vertex).reshape(3, 1))
+            # Update the vertex with the new rotated coordinates
+            self.vertices[i] = rotated_vertex.flatten().tolist()
+            
+    def get_euler_angles(self):
+        # Return the current Euler angles in degrees
+        return math.degrees(self.roll), math.degrees(self.pitch), math.degrees(self.yaw)

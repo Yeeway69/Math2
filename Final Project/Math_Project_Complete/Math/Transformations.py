@@ -35,30 +35,32 @@ def rotation_matrix_from_euler_angles(roll, pitch, yaw):
     R = np.dot(R_z, np.dot(R_y, R_x))
     return R
 
+
 def euler_angles_from_quaternion(q):
     # Assuming quaternion is of the form [w, x, y, z]
     qw, qx, qy, qz = q
     t0 = +2.0 * (qw * qx + qy * qz)
     t1 = +1.0 - 2.0 * (qx * qx + qy * qy)
-    roll = math.atan2(t0, t1)
+    roll_x = math.atan2(t0, t1)
     
     t2 = +2.0 * (qw * qy - qz * qx)
     t2 = +1.0 if t2 > +1.0 else t2
     t2 = -1.0 if t2 < -1.0 else t2
-    pitch = math.asin(t2)
+    pitch_y = math.asin(t2)
     
     t3 = +2.0 * (qw * qz + qx * qy)
     t4 = +1.0 - 2.0 * (qy * qy + qz * qz)
-    yaw = math.atan2(t3, t4)
+    yaw_z = math.atan2(t3, t4)
     
-    return roll, pitch, yaw  # in radians
+    return roll_x, pitch_y, yaw_z  # in radians
+
 
 def rotation_vector_from_euler_angles(roll, pitch, yaw):
-    # This uses the Rodrigues' rotation formula for conversion
     R = rotation_matrix_from_euler_angles(roll, pitch, yaw)
     theta = math.acos((np.trace(R) - 1) / 2)
-    r = np.array([(R[2, 1] - R[1, 2]),
-                  (R[0, 2] - R[2, 0]),
-                  (R[1, 0] - R[0, 1])])
-    r = r * theta / (2 * math.sin(theta))
-    return r
+    omega = np.array([(R[2, 1] - R[1, 2]),
+                      (R[0, 2] - R[2, 0]),
+                      (R[1, 0] - R[0, 1])]) / (2 * math.sin(theta))
+    rotation_vector = theta * omega
+    return rotation_vector
+

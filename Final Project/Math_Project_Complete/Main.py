@@ -3,6 +3,7 @@ import sys
 from Graphics.Cube import Cube
 from Controllers.KeyboardController import handle_keyboard_events
 from UI.MainUI import update_ui
+from Math.Transformations import rotation_matrix_from_euler_angles
 
 # Initialize Pygame
 pygame.init()
@@ -17,9 +18,17 @@ pygame.display.set_caption('3D Cube Visualization')
 # Create a Cube object
 cube = Cube()
 
+# Function to get user input for Euler angles (placeholder)
+def get_user_input_euler_angles():
+    # TODO: Implement actual user input logic
+    # Return roll, pitch, yaw as radians
+    return 0, 0, 0  # Placeholder values
+
+
 # Main loop
 
 running = True
+
 
 
 while running:
@@ -28,10 +37,17 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # Handle keyboard events
-        handle_keyboard_events(event, cube)
-        # Clear the screen with a background color at the start of each frame
+    # Handle keyboard events
+    handle_keyboard_events(event, cube)   
+    
+    # Update cube's orientation based on user input
+    # TODO: Replace this with actual input handling logic
+    roll, pitch, yaw = get_user_input_euler_angles()
+    rotation_matrix = rotation_matrix_from_euler_angles(roll, pitch, yaw)
+    cube.apply_rotation(rotation_matrix)
+    
     screen.fill((0, 0, 0))  # Fill the screen with black (or any other color that contrasts with the cube)
+    
     # Define the left and right zones
     left_zone_width = screen.get_width() // 2
     right_zone_width = screen.get_width() - left_zone_width
@@ -45,8 +61,7 @@ while running:
     cube.draw(screen.subsurface((0, 0, left_zone_width, screen.get_height())))
     # Update UI in the right zone
     update_ui(screen.subsurface((left_zone_width, 0, right_zone_width, screen.get_height())), cube)
-    # Handle keyboard events
-    handle_keyboard_events(event, cube)
+    
 
     # Update cube and UI
     update_ui(screen, cube)
