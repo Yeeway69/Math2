@@ -1,4 +1,5 @@
 import pygame
+
 import sys
 from Graphics.Cube import Cube
 from Controllers.KeyboardController import handle_keyboard_events

@@ -1,4 +1,5 @@
 import pygame
+
 import math
 import numpy as np
 
@@ -57,24 +58,35 @@ class Cube:
         fov = 100  # Field of View
         viewer_distance = 5
 
-        # Sort the edges by the furthest away z value
-        sorted_edges = sorted(self.edges, key=lambda edge: max(self.vertices[edge[0]][2], self.vertices[edge[1]][2]), reverse=True)
+        # Create a list to hold the depth of each edge
+        edge_depths = []
+        for edge in self.edges:
+            # Calculate the average z value of the vertices that make up the edge
+            z1 = self.vertices[edge[0]][2]
+            z2 = self.vertices[edge[1]][2]
+            average_z = (z1 + z2) / 2
+            edge_depths.append((edge, average_z))
+            
+        # Sort the edges by their average z value in descending order
+        edge_depths.sort(key=lambda x: x[1], reverse=True)
 
-        for edge in sorted_edges:
+        
+
+        # Draw the edges starting with the furthest away
+        for edge, _ in edge_depths:
             points = []
             for vertex in edge:
                 x, y, z = self.vertices[vertex]
-                # Applying perspective projection to map 3D coordinates to 2D
+                # Apply perspective projection to map 3D coordinates to 2D
                 if z > 0:  # This ensures we're not trying to project points that are 'behind' the viewer
                     factor = fov / (fov + z)
                     x, y = x * factor, y * factor
                     # Convert the projected points to screen space (2D)
                     screen_x, screen_y = (center_x + int(x * scale), center_y - int(y * scale))
                     points.append((screen_x, screen_y))
-                else:
-                    break  # Skip the edge if one of its vertices is behind the viewer
-            if len(points) == 2:  # If both points are in front of the viewer, draw the edge
-                pygame.draw.line(screen, (255, 255, 255), points[0], points[1], 1)
+            if len(points) > 1:
+               pygame.draw.line(screen, (255, 255, 255), points[0], points[1], 1)
+
                 
     def apply_rotation(self, rotation_matrix):
         # Apply the rotation matrix to each vertex
