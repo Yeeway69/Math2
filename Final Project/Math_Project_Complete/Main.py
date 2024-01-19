@@ -1,9 +1,10 @@
+from datetime import timedelta
 import pygame
-
+import pygame_gui
 import sys
 from Graphics.Cube import Cube
 from Controllers.KeyboardController import handle_keyboard_events
-from UI.MainUI import update_ui
+from UI.MainUI import create_ui_elements, update_ui
 from Math.Transformations import rotation_matrix_from_euler_angles, quaternion_from_euler_angles, rotation_vector_from_euler_angles, principal_angle_axis_from_rotation_matrix
 
 # Initialize Pygame
@@ -15,6 +16,15 @@ WIDTH, HEIGHT = 800, 600
 # Set up the display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('3D Cube Visualization')
+
+manager = pygame_gui.UIManager((WIDTH, HEIGHT))
+# Now you can create your UI elements like buttons, text entry lines, etc.
+reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((650, 550), (100, 50)),
+                                            text='Reset',
+                                            manager=manager)
+
+# In your main file, after creating the UIManager instance
+ui_elements = create_ui_elements(manager)
 
 # Create a Cube object
 cube = Cube()
@@ -29,14 +39,32 @@ def get_user_input_euler_angles():
 
 running = True
 
+current_time = pygame.time.get_ticks()
 
-
+previous_time = current_time
+current_time = pygame.time.get_ticks()
+timedelta = current_time - previous_time
+manager.update(timedelta)
 while running:
      
     # Handle events
     for event in pygame.event.get():
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == ui_elements['button_update']:
+                   # Code to handle the button press, update the cube's orientation, and other UI elements
+                   pass
+
+        manager.process_events(event)
         if event.type == pygame.QUIT:
             running = False
+        # Handle pygame_gui events here
+        manager.process_events(event)
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == reset_button:
+                    # Reset functionality
+                    pass
     # Handle keyboard events
     handle_keyboard_events(event, cube)   
     
@@ -78,6 +106,12 @@ while running:
     
  # Cap the frame rate
     pygame.time.Clock().tick(60)  # Cap at 60 frames per second
+    
+ # Update the UIManager and draw the UI
+    manager.update(timedelta)
+    manager.draw_ui(screen)
+
+    pygame.display.update()
 
 # Quit Pygame
 pygame.quit()
