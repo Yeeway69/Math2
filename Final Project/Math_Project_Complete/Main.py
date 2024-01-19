@@ -3,7 +3,7 @@ import sys
 from Graphics.Cube import Cube
 from Controllers.KeyboardController import handle_keyboard_events
 from UI.MainUI import update_ui
-from Math.Transformations import rotation_matrix_from_euler_angles
+from Math.Transformations import rotation_matrix_from_euler_angles, quaternion_from_euler_angles, rotation_vector_from_euler_angles, principal_angle_axis_from_rotation_matrix
 
 # Initialize Pygame
 pygame.init()
@@ -20,8 +20,7 @@ cube = Cube()
 
 # Function to get user input for Euler angles (placeholder)
 def get_user_input_euler_angles():
-    # TODO: Implement actual user input logic
-    # Return roll, pitch, yaw as radians
+    
     return 0, 0, 0  # Placeholder values
 
 
@@ -59,12 +58,19 @@ while running:
     # cube.draw(screen)
     # Draw the cube in the left zone
     cube.draw(screen.subsurface((0, 0, left_zone_width, screen.get_height())))
-    # Update UI in the right zone
-    update_ui(screen.subsurface((left_zone_width, 0, right_zone_width, screen.get_height())), cube)
+     # Calculate the attitude representations
+    euler_angles = cube.get_euler_angles()  # Assuming this returns roll, pitch, yaw
+    quaternion = quaternion_from_euler_angles(*euler_angles)
+    rotation_matrix = rotation_matrix_from_euler_angles(*euler_angles)
+    rotation_vector = rotation_vector_from_euler_angles(*euler_angles)
+    # Calculate Principal Angle and Axis
+    principal_angle, principal_axis = principal_angle_axis_from_rotation_matrix(rotation_matrix)
+    # # Update UI in the right zone
+    # update_ui(screen.subsurface((left_zone_width, 0, right_zone_width, screen.get_height())), cube)
     
 
     # Update cube and UI
-    update_ui(screen, cube)
+    update_ui(screen,euler_angles, quaternion, rotation_matrix, rotation_vector, principal_angle, principal_axis, cube)
 
     # Update the display
     pygame.display.flip()

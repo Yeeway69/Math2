@@ -64,3 +64,15 @@ def rotation_vector_from_euler_angles(roll, pitch, yaw):
     rotation_vector = theta * omega
     return rotation_vector
 
+def principal_angle_axis_from_rotation_matrix(R):
+    theta = math.acos((np.trace(R) - 1) / 2)
+    sin_theta = math.sin(theta)
+
+    if sin_theta == 0:
+        return 0, (0, 0, 0)  # No rotation or undefined axis
+
+    u_x = (R[2, 1] - R[1, 2]) / (2 * sin_theta)
+    u_y = (R[0, 2] - R[2, 0]) / (2 * sin_theta)
+    u_z = (R[1, 0] - R[0, 1]) / (2 * sin_theta)
+
+    return math.degrees(theta), (u_x, u_y, u_z)
