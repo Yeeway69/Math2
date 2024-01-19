@@ -20,6 +20,8 @@ class Cube:
         ]
         # Scale the cube size
         self.vertices = [[self.size * x, self.size * y, self.size * z] for x, y, z in self.vertices]
+        # Store a copy of the original vertices
+        self.original_vertices = self.vertices.copy()
         # Edges between the vertices
         self.edges = [
             (0, 1), (1, 2), (2, 3), (3, 0), # Bottom vertices
@@ -99,3 +101,12 @@ class Cube:
     def get_euler_angles(self):
         # Return the current Euler angles in degrees
         return math.degrees(self.roll), math.degrees(self.pitch), math.degrees(self.yaw)
+    
+    def reset_orientation(self):
+        # Reset orientation to initial state
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
+        # Reset vertices to initial positions if they've been changed
+        self.vertices = self.original_vertices.copy()
+        # Add any other reset logic needed

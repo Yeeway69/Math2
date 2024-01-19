@@ -9,19 +9,72 @@ from pygame_gui.elements import UITextEntryLine, UIButton
 from Math.Transformations import quaternion_from_euler_angles
 import numpy as np
 
+# MainUI.py
+
+# Define the UI elements at the module level
+entry_quaternion = None
+entry_euler_angles = None
+entry_rotation_vector = None
+reset_button = None
+# MainUI.py
+class MainUI:
+    def __init__(self, manager):
+        self.manager = manager
+        self.initialize_ui()
+        
+    def initialize_ui(self):
+        # Create UI elements here
+        self.entry_quaternion = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 20), (200, 50)), manager=self.manager)
+        self.entry_euler_angles = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 85), (200, 30)), manager=self.manager)
+        self.entry_rotation_vector = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 150), (200, 30)), manager=self.manager)
+        self.entry_rotation_matrix = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 230), (200, 30)), manager=self.manager)
+        self.entry_principle_Angle = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 290), (200, 30)), manager=self.manager)
+        self.entry_principle_Matrix = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 350), (200, 30)), manager=self.manager)
+        self.button_update = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((420, 400), (100, 50)), text='Update', manager=self.manager)
+
+        
+    def reset_ui(self):
+        
+        self.entry_quaternion.set_text('0,0,0,1')
+        self.entry_euler_angles.set_text('0,0,0')
+        self.entry_rotation_vector.set_text('0,0,0')
+        self.entry_rotation_matrix.set_text('1,0,0;0,1,0;0,0,1')
+        self.entry_principle_Angle.set_text('0')
+        self.entry_principle_Matrix.set_text('1,0,0;0,1,0;0,0,1')
+        
+        
+        # ... reset other UI elements ...
+
+def initialize_ui(manager):
+    global entry_quaternion, entry_euler_angles, entry_rotation_vector, reset_button
+    
+    # Initialize the UI elements
+    entry_quaternion = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 20), (200, 50)), manager=manager)
+    # ... Initialize other UI elements similarly
+    
+    reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((650, 550), (100, 50)),
+                                                text='Reset',
+                                                manager=manager)
+
+
 def create_ui_elements(manager):
     # Create text entry lines for each editable representation
-    entry_quaternion = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 20), (200, 50)), manager=manager)
-    entry_euler_angles = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 100), (200, 50)), manager=manager)
-    entry_rotation_vector = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 140), (200, 50)), manager=manager)
-
+    entry_quaternion = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 40), (200, 30)), manager=manager)
+    entry_euler_angles = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 85), (200, 30)), manager=manager)
+    entry_rotation_vector = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 150), (200, 30)), manager=manager)
+    entry_rotaion_matrix = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 230), (200, 30)), manager=manager)
+    entry_principle_Angle = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 290), (200, 30)), manager=manager)
+    entry_principle_Matrix = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((420, 350), (200, 30)), manager=manager)
     # Create a button for updating the attitude
-    button_update = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((420, 180), (100, 50)), text='Update', manager=manager)
+    button_update = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((420, 400), (100, 50)), text='Update', manager=manager)
 
     return {
         'entry_quaternion': entry_quaternion,
         'entry_euler_angles': entry_euler_angles,
         'entry_rotation_vector': entry_rotation_vector,
+        'entry_rotation_matrix': entry_rotaion_matrix,
+        'entry_principle_Angle': entry_principle_Angle,
+        'entry_principle_Matrix': entry_principle_Matrix,
         'button_update': button_update
     }
 
@@ -34,7 +87,7 @@ def update_ui(screen, euler_angles, quaternion, rotation_matrix, rotation_vector
     # Placeholder for UI components
     # Displaying attitude representation placeholders
 # Display Euler angles
-    draw_text(screen, f'Euler Angles: Roll: {euler_angles[0]:.2f}, Pitch: {euler_angles[1]:.2f}, Yaw: {euler_angles[2]:.2f}', (420, 100))
+    draw_text(screen, f'Euler Angles: Roll: {euler_angles[0]:.2f}, Pitch: {euler_angles[1]:.2f}, Yaw: {euler_angles[2]:.2f}', (420, 70))
      # Convert numpy arrays to string for display
 
     
@@ -44,8 +97,8 @@ def update_ui(screen, euler_angles, quaternion, rotation_matrix, rotation_vector
     rotation_vector_str = np.array2string(rotation_vector, precision=2, separator=', ')
     # Display Principal Angle and Axis
     principal_axis_str = f"({principal_axis[0]:.2f}, {principal_axis[1]:.2f}, {principal_axis[2]:.2f})"
-    draw_text(screen, f'Principal Angle: {principal_angle:.2f} degrees', (420, 220))
-    draw_text(screen, f'Principal Axis: {principal_axis_str}', (420, 250))
+    draw_text(screen, f'Principal Angle: {principal_angle:.2f} degrees', (420, 260))
+    draw_text(screen, f'Principal Axis: {principal_axis_str}', (420, 320))
      # Display Quaternion
     draw_text(screen, f'Quaternion: {quaternion_str}', (420, 20))
     

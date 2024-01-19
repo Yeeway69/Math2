@@ -1,11 +1,14 @@
+
 from datetime import timedelta
+from msilib.schema import SelfReg
 import pygame
 import pygame_gui
 import sys
 from Graphics.Cube import Cube
 from Controllers.KeyboardController import handle_keyboard_events
-from UI.MainUI import create_ui_elements, update_ui
+from UI.MainUI import create_ui_elements, update_ui, initialize_ui, MainUI
 from Math.Transformations import rotation_matrix_from_euler_angles, quaternion_from_euler_angles, rotation_vector_from_euler_angles, principal_angle_axis_from_rotation_matrix
+import numpy as np
 
 # Initialize Pygame
 pygame.init()
@@ -18,12 +21,14 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('3D Cube Visualization')
 
 manager = pygame_gui.UIManager((WIDTH, HEIGHT))
+# MainUI.initialize_ui(manager)
 # Now you can create your UI elements like buttons, text entry lines, etc.
 reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((650, 550), (100, 50)),
                                             text='Reset',
                                             manager=manager)
 
 # In your main file, after creating the UIManager instance
+
 ui_elements = create_ui_elements(manager)
 
 # Create a Cube object
@@ -46,7 +51,7 @@ current_time = pygame.time.get_ticks()
 timedelta = current_time - previous_time
 manager.update(timedelta)
 while running:
-     
+    time_delta = pygame.time.Clock().tick(60)/1000.0
     # Handle events
     for event in pygame.event.get():
         if event.type == pygame.USEREVENT:
@@ -64,12 +69,16 @@ while running:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == reset_button:
                     # Reset functionality
+                    cube.reset_orientation()
+                    # Create an instance of MainUI
+                    main_ui = MainUI(manager)
+                    main_ui.reset_ui() # Call the reset method of your ui instance
                     pass
     # Handle keyboard events
     handle_keyboard_events(event, cube)   
     
     # Update cube's orientation based on user input
-    # TODO: Replace this with actual input handling logic
+    
     roll, pitch, yaw = get_user_input_euler_angles()
     rotation_matrix = rotation_matrix_from_euler_angles(roll, pitch, yaw)
     cube.apply_rotation(rotation_matrix)
@@ -101,16 +110,16 @@ while running:
     # Update cube and UI
     update_ui(screen,euler_angles, quaternion, rotation_matrix, rotation_vector, principal_angle, principal_axis, cube)
 
-    # Update the display
-    pygame.display.flip()
+  
     
  # Cap the frame rate
     pygame.time.Clock().tick(60)  # Cap at 60 frames per second
     
  # Update the UIManager and draw the UI
-    manager.update(timedelta)
+    manager.update(time_delta)
     manager.draw_ui(screen)
-
+      # Update the display
+    pygame.display.flip()
     pygame.display.update()
 
 # Quit Pygame
